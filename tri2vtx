@@ -1,0 +1,47 @@
+public float tri2vtx(Vector3 vertex1,Vector3 vertex2,Vector3 vertex3)
+{  
+  // Calculate the normal vector of the plane containing the triangle
+  Vector3 normal = Vector3.Cross(vertex2 - vertex1, vertex3 - vertex1).normalized;
+  
+  // Calculate the d value of the plane equation
+  float d = -Vector3.Dot(normal, vertex1);
+  
+  // Calculate the distance from the given point to the plane
+  float distanceToPlane = Mathf.Abs(Vector3.Dot(normal, PartList[i].startPoint) + d) / normal.magnitude;
+  
+  // Calculate the point E projected onto the plane
+  Vector3 e = Vector3.ProjectOnPlane(PartList[i].startPoint, normal);
+  
+  // Check if the point E is inside the triangle
+  float dis = ((e - vertex1).normalized + (e - vertex2).normalized + (e - vertex3).normalized).magnitude;
+  
+  // Point inside the triangle
+  if (dis > 1)
+  {
+      
+      distanceToPlane = Mathf.Min(DistanceLineAndPoint(vertex1, vertex2, PartList[i].startPoint),
+                                  DistanceLineAndPoint(vertex2, vertex3, PartList[i].startPoint),
+                                  DistanceLineAndPoint(vertex3, vertex1, PartList[i].startPoint));
+  }
+
+  return distanceToPlane;
+}
+
+// Distance between the point and the line segment
+public float DistanceLineAndPoint(Vector3 s, Vector3 e, Vector3 p)
+{
+  Vector3 sp = p - s;
+  Vector3 se = e - s;
+  Vector3 es = s - e;
+  Vector3 ep = p - e;
+
+
+  if(Vector3.Dot(sp, se) * Vector3.Dot(es,ep) >= 0)
+  {
+      return Mathf.Abs(Vector3.Cross(sp, se).magnitude / Vector3.Distance(s, e));
+  }
+  else
+  {
+      return Mathf.Min(Vector3.Distance(s, p), Vector3.Distance(e, p));
+  }
+}
